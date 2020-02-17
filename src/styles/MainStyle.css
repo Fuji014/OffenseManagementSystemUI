@@ -1,0 +1,5 @@
+#jfxTxtBox{
+    -fx-prompt-text-fill: #fff;
+    -fx-text-fill: #fff;
+    -jfx-focus-color: transparent;
+}
