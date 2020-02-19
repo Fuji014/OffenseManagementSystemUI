@@ -93,10 +93,14 @@ public class DatabaseAccessObject  {
                 Date date1 = new Date() ;
                 SimpleDateFormat dateFormat1 = new SimpleDateFormat("HH:mm") ;
                 dateFormat1.format(date1);
+                Date date2 = new Date() ;
+                SimpleDateFormat dateFormat2 = new SimpleDateFormat("HH:mm") ;
+                dateFormat1.format(date2);
                 // end of init Date
                 String valueOfWeeks = "";
+                String valueOfWeeks1 = "";
                 int scheduleStatus  = 0;
-                query = "select "+getCurrentWeek()+",status from schedule_tbl where policy = 'tardiness' and dept_key = "+dept_key+" limit 1";
+                query = "select "+getCurrentWeek()+" from tardiness_endtime_tbl where dept_key = "+dept_key+" limit 1";
                 try {
                     connection = connector.getConnection();
                 }catch (Exception e){
@@ -106,33 +110,50 @@ public class DatabaseAccessObject  {
                     prs = connection.prepareStatement(query);
                     rs = prs.executeQuery();
                     while(rs.next()){
-                        valueOfWeeks = rs.getString(1);
-                        scheduleStatus = rs.getInt(2);
+                        valueOfWeeks1 = rs.getString(1);
                     }
-                    if(scheduleStatus == 1){
-                        if(dateFormat1.parse(dateFormat1.format(date1)).after(dateFormat1.parse(valueOfWeeks)))
-                        {
-                            String timediff = timedifference(dateFormat1.format(date1),valueOfWeeks) + " hh:mm late";
-
-                            System.out.println("late");
-                            query = "INSERT INTO `record_tbl` (`id`, `student_key`, `date`, `time_in`, `time_out`, `login_remarks`) VALUES (NULL, "+student_key+", '"+logDate+"', '"+logTime+"', '', '"+timediff+"')";
+                    if(!dateFormat2.parse(dateFormat2.format(date2)).after(dateFormat2.parse(valueOfWeeks1))){
+                        // mod
+                        query = "select "+getCurrentWeek()+",status from schedule_tbl where policy = 'tardiness' and dept_key = "+dept_key+" limit 1";
+                        try {
                             connection = connector.getConnection();
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                        try {
                             prs = connection.prepareStatement(query);
-                            prs.executeUpdate();
+                            rs = prs.executeQuery();
+                            while(rs.next()){
+                                valueOfWeeks = rs.getString(1);
+                                scheduleStatus = rs.getInt(2);
+                            }
                             if(scheduleStatus == 1){
-                                policyTardiness(student_key,dept_key,timediff);
+                                if(dateFormat1.parse(dateFormat1.format(date1)).after(dateFormat1.parse(valueOfWeeks)))
+                                {
+                                    String timediff = timedifference(dateFormat1.format(date1),valueOfWeeks) + " hh:mm late";
+                                    System.out.println("late");
+                                    query = "INSERT INTO `record_tbl` (`id`, `student_key`, `date`, `time_in`, `time_out`, `login_remarks`) VALUES (NULL, "+student_key+", '"+logDate+"', '"+logTime+"', '', '"+timediff+"')";
+                                    connection = connector.getConnection();
+                                    prs = connection.prepareStatement(query);
+                                    prs.executeUpdate();
+                                    if(scheduleStatus == 1){
+                                        policyTardiness(student_key,dept_key,timediff);
+                                    }
+                                }else{
+                                    System.out.println("on time");
+                                    query = "INSERT INTO `record_tbl` (`id`, `student_key`, `date`, `time_in`, `time_out`, `login_remarks`) VALUES (NULL, "+student_key+", '"+logDate+"', '"+logTime+"', '', 'on time')";
+                                    connection = connector.getConnection();
+                                    prs = connection.prepareStatement(query);
+                                    prs.executeUpdate();
+                                }
                             }
 
-                        }else{
-                            System.out.println("on time");
-                            query = "INSERT INTO `record_tbl` (`id`, `student_key`, `date`, `time_in`, `time_out`, `login_remarks`) VALUES (NULL, "+student_key+", '"+logDate+"', '"+logTime+"', '', 'on time')";
-                            connection = connector.getConnection();
-                            prs = connection.prepareStatement(query);
-                            prs.executeUpdate();
+                            // end of execution
+                        }catch (Exception e){
+                            e.printStackTrace();
                         }
+                        // end of mod
                     }
-
-                    // end of execution
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -569,8 +590,6 @@ public class DatabaseAccessObject  {
     }
 
     public  String timedifference(String time1,String time2) {
-        //String time1 = "20:30";
-        //String time2 = "19:00";
         String timediff = "";
         SimpleDateFormat format = new SimpleDateFormat("HH:mm");
         try {
@@ -619,7 +638,8 @@ public class DatabaseAccessObject  {
             parent_fullname = rs.getString("parent_fullname");
             parent_contact = rs.getString("parent_contact");
         }
-        String message1 = "Greetings Mr/Ms. "+parent_fullname+", This message is to inform you that "+student_name+", with ID number "+student_key+" has committed a violation against the school's policy. He/She violated a "+severity+" offense under subjection "+offense+", and is subjected to "+punishment+". Remarks: "+remarks+". For more details and concerns, Please contact us at 09087118184. Thankyou";
+        String message1 = "Greetings Mr/Ms. "+parent_fullname+", This message isdbstatusLbl" +
+                " to inform you that "+student_name+", with ID number "+student_key+" has committed a violation against the school's policy. He/She violated a "+severity+" offense under subjection "+offense+", and is subjected to "+punishment+". Remarks: "+remarks+". For more details and concerns, Please contact us at 09087118184. Thankyou";
         message = "jerome gabat apple jean garcia yan e ";
         if (serialPort.isOpened()) { // check if open
             System.out.println("Port is open :)");

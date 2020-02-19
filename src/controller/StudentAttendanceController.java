@@ -55,9 +55,6 @@ public class StudentAttendanceController implements Initializable {
     private JFXTextField studnameTxt;
 
     @FXML
-    private JFXTextField studstrandTxt;
-
-    @FXML
     private Label constatusLbl;
 
     @FXML
@@ -65,9 +62,6 @@ public class StudentAttendanceController implements Initializable {
 
     @FXML
     private Label dbstatusLbl;
-
-    @FXML
-    private JFXButton connectBtn;
 
     // declare var below
     private DatabaseAccessObject dao;
@@ -98,10 +92,10 @@ public class StudentAttendanceController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        initFields();
         initClock();
         try {
             initRfid();
+            initFields();
         } catch (SerialPortException e) {
             e.printStackTrace();
         }
@@ -115,13 +109,6 @@ public class StudentAttendanceController implements Initializable {
         // end of methods
 
         // event buttons
-        connectBtn.setOnAction(event -> {
-            try {
-                eventConnectBtn();
-            } catch (SerialPortException e) {
-                e.printStackTrace();
-            }
-        });
         // end of event buttons
     }
 
@@ -168,24 +155,6 @@ public class StudentAttendanceController implements Initializable {
 
     // read output of rfid
 
-    public void eventConnectBtn() throws SerialPortException {
-        serialPort.closePort();
-//        try{
-//            connectBtn.setDisable(true);
-//            if(serialPort == null){
-//                String[] portNames = SerialPortList.getPortNames();
-//                String scanPort = "COM3" ;
-//                for(int i = 0; i < portNames.length; i++){
-//                    System.out.println(portNames[i]);
-//                    scanPort = portNames[i];
-//                }
-//                serialPort = new SerialPort(scanPort);
-//                portconnectedLbl.setText((serialPort == null) ? "No Source found" : serialPort.getPortName());
-//                constatusLbl.setText((serialPort == null) ? "Connecting to device" : "Device Connection Established");
-//            }
-
-    }
-
     public void con(String t){
         Platform.runLater(()->{
             try{
@@ -197,7 +166,6 @@ public class StudentAttendanceController implements Initializable {
                     studnameTxt.setText(ID.getString("student_name"));
                     studyrTxt.setText(ID.getString("student_year"));
                     studsecTxt.setText(ID.getString("student_section"));
-                    studstrandTxt.setText(ID.getString("student_strand"));
                     int dept_key = ID.getInt("student_department");
                     studdeptTxt.setText(ID.getString("dept_name"));
                     // for image
@@ -228,7 +196,6 @@ public class StudentAttendanceController implements Initializable {
                     studyrTxt.setText("No records found");
                     studsecTxt.setText("No records found");
                     studdeptTxt.setText("No records found");
-                    studstrandTxt.setText("No records found");
                     image = null;
                     studimageCircle.setFill(new ImagePattern(image));
                 }

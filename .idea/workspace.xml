@@ -277,6 +277,17 @@
     </state>
     <state x="346" y="59" width="672" height="160" key="search.everywhere.popup/0.0.1366.738@0.0.1366.738" timestamp="1581396388843" />
   </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/controller/StudentAttendanceController.java</url>
+          <line>56</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/OffenseManagementStudentUI$Main.ic" NAME="Main Coverage Results" MODIFIED="1581097477452" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
       <FILTER>sample.*</FILTER>
