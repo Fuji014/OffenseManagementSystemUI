@@ -70,6 +70,39 @@ public class DatabaseAccessObject  {
         }
     }
 
+    public static String getCurrentWeek() { //get current week 1-7 means monday to sunday
+        LocalDate date = LocalDate.now();
+        WeekFields weekFields = WeekFields.of(Locale.getDefault());
+        // check current weeks 1-7 means monday to sunday
+        int currentWeeksToInt = date.get(weekFields.weekOfWeekBasedYear());
+        String currentWeeksToString = ""; // init currentWeeksToInt var
+        switch(currentWeeksToInt){
+            case 1:
+                currentWeeksToString = "monday";
+                break;
+            case 2:
+                currentWeeksToString = "tuesday";
+                break;
+            case 3:
+                currentWeeksToString = "wednesday";
+                break;
+            case 4:
+                currentWeeksToString = "thursday";
+                break;
+            case 5:
+                currentWeeksToString = "friday";
+                break;
+            case 6:
+                currentWeeksToString = "saturday";
+                break;
+            case 7:
+                currentWeeksToString = "sunday";
+                break;
+        }
+        // end of check current weeks
+        return currentWeeksToString;
+    }
+
     public String login(String student_key,int dept_key) throws SQLException {
         rs = null;
         Date date = new Date();
@@ -77,6 +110,7 @@ public class DatabaseAccessObject  {
         String logTime = new SimpleDateFormat("hh:mm").format(date);
         // first c
         //
+
         // heck if student is already login in the current date
         query = "select * from record_tbl where student_key = "+student_key+" and time_in = '"+logTime+"'";
         try {
@@ -297,39 +331,6 @@ public class DatabaseAccessObject  {
             connector.close(connection,prs,rs);
             return count;
         }
-    }
-
-    public static String getCurrentWeek() { //get current week 1-7 means monday to sunday
-        LocalDate date = LocalDate.now();
-        WeekFields weekFields = WeekFields.of(Locale.getDefault());
-        // check current weeks 1-7 means monday to sunday
-        int currentWeeksToInt = date.get(weekFields.weekOfWeekBasedYear());
-        String currentWeeksToString = ""; // init currentWeeksToInt var
-        switch(currentWeeksToInt){
-            case 1:
-                currentWeeksToString = "monday";
-                break;
-            case 2:
-                currentWeeksToString = "tuesday";
-                break;
-            case 3:
-                currentWeeksToString = "wednesday";
-                break;
-            case 4:
-                currentWeeksToString = "thursday";
-                break;
-            case 5:
-                currentWeeksToString = "friday";
-                break;
-            case 6:
-                currentWeeksToString = "saturday";
-                break;
-            case 7:
-                currentWeeksToString = "sunday";
-                break;
-        }
-        // end of check current weeks
-        return currentWeeksToString;
     }
 
     public void policyTardiness(String student_key,int department_key,String timediff){
@@ -627,7 +628,7 @@ public class DatabaseAccessObject  {
     }
 
     public void sendSMS(String student_key,String severity,String offense, String punishment,String remarks) throws SQLException, SerialPortException {
-        serialPort = new SerialPort("COM5");
+        serialPort = new SerialPort(StudentAttendanceController.getStudentAttendanceController().gsmport);
         serialPort.openPort();
         String student_name="",parent_fullname="",parent_contact="",message="";
         query = "select student_id,student_name,parent_fullname,parent_contact from student_tbl where student_id = "+student_key+"";

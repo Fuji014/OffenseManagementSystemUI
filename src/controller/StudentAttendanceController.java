@@ -6,11 +6,18 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import jssc.*;
 import model.ConnectionHandler;
@@ -63,6 +70,9 @@ public class StudentAttendanceController implements Initializable {
     @FXML
     private Label dbstatusLbl;
 
+    @FXML
+    private JFXButton configBtn;
+
     // declare var below
     private DatabaseAccessObject dao;
     private String query;
@@ -72,10 +82,11 @@ public class StudentAttendanceController implements Initializable {
 
     // for rfid
     static ConnectionHandler connector = new ConnectionHandler();
-    static SerialPort serialPort = new SerialPort("COM6");
+    static SerialPort serialPort;
     static Thread threadToInterrupt = null;
     static InputStream inputStream = null;
     private Image image;
+    public String rfidport = "",gsmport = "";
 
 
     // end of var below
@@ -109,6 +120,13 @@ public class StudentAttendanceController implements Initializable {
         // end of methods
 
         // event buttons
+        configBtn.setOnAction(event -> {
+            try {
+                createPage(null,"/view/ConfigPage.fxml");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
         // end of event buttons
     }
 
@@ -121,6 +139,7 @@ public class StudentAttendanceController implements Initializable {
     }
 
     public void initRfid() throws SerialPortException {
+        serialPort = new SerialPort(rfidport);
         try {
             serialPort.openPort();//Open port
             serialPort.setParams(9600, 8, 1, 0);//Set params
@@ -249,6 +268,18 @@ public class StudentAttendanceController implements Initializable {
     }
 
     // end of custom methods
+
+    public void createPage(String title, String loc) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource(loc));
+        Scene sc = new Scene(root);
+        sc.setFill(Color.TRANSPARENT);
+        Stage secondaryStage = new Stage();
+        secondaryStage.setScene(sc);
+        secondaryStage.setTitle(title);
+        secondaryStage.initModality(Modality.APPLICATION_MODAL);
+        secondaryStage.initStyle(StageStyle.TRANSPARENT);
+        secondaryStage.show();
+    }
 
 
 
