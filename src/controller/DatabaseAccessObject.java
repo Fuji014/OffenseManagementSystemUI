@@ -201,7 +201,7 @@ public class DatabaseAccessObject  {
         //
 
     }
-    public String logout(String student_key,int dept_key) throws SQLException {
+    public String logout(String student_key,int dept_key,String timediff) throws SQLException {
         rs = null;
         Date date = new Date();
         String logDate = new SimpleDateFormat("dd-MM-yyyy").format(date);
@@ -254,7 +254,7 @@ public class DatabaseAccessObject  {
                             if(!dateFormat1.parse(dateFormat1.format(date1)).after(dateFormat1.parse(valueOfWeeks)))
                             {
                                 System.out.println("truancy");
-                                policyTruancy(student_key,dept_key);
+                                policyTruancy(student_key,dept_key,dateFormat1.format(date1));
                             }
                         }
                     }catch (Exception e){
@@ -281,7 +281,7 @@ public class DatabaseAccessObject  {
                             if(dateFormat1.parse(dateFormat1.format(date1)).after(dateFormat1.parse(valueOfWeeks)))
                             {
                                 System.out.println("curfew!");
-                                policyCurfew(student_key,dept_key);
+                                policyCurfew(student_key,dept_key,timediff);
                             }
                         }
                     }catch (Exception e){
@@ -356,7 +356,7 @@ public class DatabaseAccessObject  {
             e.printStackTrace();
         }
     }
-    public void policyTruancy(String student_key,int department_key){
+    public void policyTruancy(String student_key,int department_key,String timediff){
         int offense_key=0;
         switch (department_key){
             case 1:
@@ -373,14 +373,14 @@ public class DatabaseAccessObject  {
                 break;
         }
         try{
-            truancyEvent(student_key,department_key,offense_key);
+            truancyEvent(student_key,department_key,offense_key,timediff);
 
         }catch (Exception e){
             e.printStackTrace();
         }
     }
 
-    public void policyCurfew(String student_key,int department_key){
+    public void policyCurfew(String student_key,int department_key,String timediff){
         int offense_key=0;
         switch (department_key){
             case 1:
@@ -397,7 +397,7 @@ public class DatabaseAccessObject  {
                 break;
         }
         try{
-            curfewEvent(student_key,department_key,offense_key);
+            curfewEvent(student_key,department_key,offense_key,timediff);
 
         }catch (Exception e){
             e.printStackTrace();
@@ -461,7 +461,7 @@ public class DatabaseAccessObject  {
                     System.out.println(penaltyDescription);
                     System.out.println(departmentKey);
 
-                    notifyInsert(student_key,penaltyDescription,departmentKey,countStudOffense);
+                    notifyInsert(student_key,penaltyDescription,departmentKey);
                     sendSMS(student_key,"tardiness",timediff);
 
                 }
@@ -473,7 +473,7 @@ public class DatabaseAccessObject  {
             // end of get offense key
     }
 
-    public void truancyEvent(String student_key,int department,int offense_key) throws SQLException {
+    public void truancyEvent(String student_key,int department,int offense_key,String timediff) throws SQLException {
         // get offense key
         try {
             // select severity and dept key of offense_tbl
@@ -536,7 +536,7 @@ public class DatabaseAccessObject  {
             e.printStackTrace();
         }
     }
-    public void curfewEvent(String student_key,int department,int offense_key) throws SQLException {
+    public void curfewEvent(String student_key,int department,int offense_key,String timediff) throws SQLException {
         // get offense key
         try {
             // select severity and dept key of offense_tbl

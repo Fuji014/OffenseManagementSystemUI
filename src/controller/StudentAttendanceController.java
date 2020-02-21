@@ -203,7 +203,8 @@ public class StudentAttendanceController implements Initializable {
                     if(hasData == 0){
                         String sampleData = dao.login(stud_key,dept_key);
                     }else{
-                        String sampleData1 = dao.logout(stud_key,dept_key);
+                        String timediff= "";
+                        String sampleData1 = dao.logout(stud_key,dept_key,timediff);
                     }
 
 
