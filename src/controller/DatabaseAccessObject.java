@@ -75,6 +75,7 @@ public class DatabaseAccessObject  {
         WeekFields weekFields = WeekFields.of(Locale.getDefault());
         // check current weeks 1-7 means monday to sunday
         int currentWeeksToInt = date.get(weekFields.weekOfWeekBasedYear());
+        System.out.println("currentWeeksToInt"+ currentWeeksToInt);
         String currentWeeksToString = ""; // init currentWeeksToString var
         switch(currentWeeksToInt){
             case 1:
