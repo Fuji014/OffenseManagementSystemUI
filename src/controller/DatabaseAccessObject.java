@@ -171,7 +171,7 @@ public class DatabaseAccessObject  {
                                     prs = connection.prepareStatement(query);
                                     prs.executeUpdate();
                                     if(scheduleStatus == 1){
-                                        policyTardiness(student_key,dept_key,timediff);
+                                        policyTardiness(student_key,dept_key,dateFormat1.format(date1));
                                     }
                                 }else{
                                     System.out.println("on time");
@@ -447,7 +447,7 @@ public class DatabaseAccessObject  {
                         prs = connection.prepareStatement(query);
                         prs.executeUpdate();
                         notifyInsert(student_key,penaltyDescription,departmentKey);
-                        sendSMS(student_key,severity,"test",description,description);
+                        sendSMS(student_key,"tardiness",timediff);
                 }else {
                     prs.close();
                     if(departmentKey == 1){
@@ -461,8 +461,8 @@ public class DatabaseAccessObject  {
                     System.out.println(penaltyDescription);
                     System.out.println(departmentKey);
 
-                    notifyInsert(student_key,penaltyDescription,departmentKey);
-                    sendSMS(student_key,severity,"test",description,description);
+                    notifyInsert(student_key,penaltyDescription,departmentKey,countStudOffense);
+                    sendSMS(student_key,"tardiness",timediff);
 
                 }
             }catch (Exception e){
@@ -512,12 +512,13 @@ public class DatabaseAccessObject  {
                 prs = connection.prepareStatement(query);
                 prs.executeUpdate();
                 notifyInsert(student_key,penaltyDescription,departmentKey);
+                sendSMS(student_key,"truancy",timediff);
             }else {
-                System.out.println("wow");
                 query = "insert into student_offense_tbl (`std_offense_id`,`student_key`,`offense_key`,`student_offense_count`,`offense_severity`,`offense_duration`,`offense_completedTime`,`offense_status`,`student_offense_remarks`) values (null,"+student_key+","+offense_key+","+countStudOffense+",'"+severity+"','"+penaltyDuration+"','00:00',0,'"+penaltyDescription+"')";
                 prs = connection.prepareStatement(query);
                 prs.executeUpdate();
                 notifyInsert(student_key,penaltyDescription,departmentKey);
+                sendSMS(student_key,"truancy",timediff);
             }
 
         }catch (Exception e){
@@ -578,10 +579,11 @@ public class DatabaseAccessObject  {
                 prs.clearParameters();
                 query = "insert into student_offense_tbl (`std_offense_id`,`student_key`,`offense_key`,`student_offense_count`,`offense_severity`,`offense_duration`,`offense_completedTime`,`offense_status`,`student_offense_remarks`) values (null,"+student_key+","+offense_key+","+countStudOffense+",'"+severity+"','"+penaltyDuration+"','00:00',0,'"+penaltyDescription+"')";
             }
-            notifyInsert(student_key,penaltyDescription,departmentKey);
             prs.close();
             prs = connection.prepareStatement(query);
             prs.executeUpdate();
+            notifyInsert(student_key,penaltyDescription,departmentKey);
+            sendSMS(student_key,"curfew",timediff);
         }catch (Exception e){
             e.printStackTrace();
         }finally {
@@ -627,7 +629,7 @@ public class DatabaseAccessObject  {
         }
     }
 
-    public void sendSMS(String student_key,String severity,String offense, String punishment,String remarks) throws SQLException, SerialPortException {
+    public void sendSMS(String student_key,String offense,String timediff) throws SQLException, SerialPortException {
         serialPort = new SerialPort(StudentAttendanceController.getStudentAttendanceController().gsmport);
         serialPort.openPort();
         String student_name="",parent_fullname="",parent_contact="",message="";
@@ -639,9 +641,17 @@ public class DatabaseAccessObject  {
             parent_fullname = rs.getString("parent_fullname");
             parent_contact = rs.getString("parent_contact");
         }
-        String message1 = "Greetings Mr/Ms. "+parent_fullname+", This message isdbstatusLbl" +
-                " to inform you that "+student_name+", with ID number "+student_key+" has committed a violation against the school's policy. He/She violated a "+severity+" offense under subjection "+offense+", and is subjected to "+punishment+". Remarks: "+remarks+". For more details and concerns, Please contact us at 09087118184. Thankyou";
-        message = "jerome gabat apple jean garcia yan e ";
+        switch(offense){
+            case "tardiness":
+                message = "Greetings! "+student_name+" has incurred Tardiness at ("+timediff+" on 02-05-20). Student is sanctioned with community service. Thank you!";
+                break;
+            case "truancy":
+                message = "Greetings! We are to inform you that "+student_name+", has committed a major offense. Please expect a call or contact us at 9915668. Thank you";
+                break;
+            case "curfew":
+                message = "Greetings! "+student_name+" has Violated Curfew of 6:30PM on (02-05-20). Student is sanctioned with community service. Thank you!";
+                break;
+        }
         if (serialPort.isOpened()) { // check if open
             System.out.println("Port is open :)");
         } else {
