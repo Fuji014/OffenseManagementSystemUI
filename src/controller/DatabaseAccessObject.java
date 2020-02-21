@@ -664,6 +664,7 @@ public class DatabaseAccessObject  {
                     SerialPort.STOPBITS_1,
                     SerialPort.PARITY_NONE);//Set params. Also you can set params by this string: serialPort.setParams(9600, 8, 1, 0);
             String messageString1 = "AT";
+            String messageString2 = "AT+CMGF=1";
 //            String messageString2 = "AT+CPIN=\"7078\"";
             String messageString3 = "AT+CSCS=\"GSM\"";
 //            String messageString3 = "AT+CMGF=1";
@@ -678,6 +679,8 @@ public class DatabaseAccessObject  {
                 while(_Spliter.getSplit(message).size() > count) {
                     serialPort.writeBytes((messageString1 + enter).getBytes());
                     Thread.sleep(1000);
+                    serialPort.writeBytes((messageString2 + enter).getBytes());
+                    Thread.sleep(1000);
                     serialPort.writeBytes((messageString3 + enter).getBytes());
                     Thread.sleep(1000);
                     serialPort.writeBytes((messageString4 + enter).getBytes());
@@ -691,6 +694,8 @@ public class DatabaseAccessObject  {
                 }
             }else{
                 serialPort.writeBytes((messageString1 + enter).getBytes());
+                Thread.sleep(1000);
+                serialPort.writeBytes((messageString2 + enter).getBytes());
                 Thread.sleep(1000);
                 serialPort.writeBytes((messageString3 + enter).getBytes());
                 Thread.sleep(1000);
