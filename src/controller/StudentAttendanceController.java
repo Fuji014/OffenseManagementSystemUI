@@ -38,13 +38,13 @@ import java.util.logging.Logger;
 public class StudentAttendanceController implements Initializable {
 
     @FXML
-    public JFXTextField studrfidTxt;
-
-    @FXML
     private Circle studimageCircle;
 
     @FXML
     private Label dateLbl;
+
+    @FXML
+    private JFXTextField studrfidTxt;
 
     @FXML
     private JFXTextField studidTxt;
@@ -73,6 +73,9 @@ public class StudentAttendanceController implements Initializable {
     @FXML
     private JFXButton configBtn;
 
+    @FXML
+    private JFXButton connectBtn;
+
     // declare var below
     private DatabaseAccessObject dao;
     private String query;
@@ -82,7 +85,7 @@ public class StudentAttendanceController implements Initializable {
 
     // for rfid
     static ConnectionHandler connector = new ConnectionHandler();
-    static SerialPort serialPort;
+    static SerialPort serialPort = new SerialPort("COM3");
     static Thread threadToInterrupt = null;
     static InputStream inputStream = null;
     private Image image;
@@ -104,12 +107,7 @@ public class StudentAttendanceController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initClock();
-        try {
-            initRfid();
-            initFields();
-        } catch (SerialPortException e) {
-            e.printStackTrace();
-        }
+        initFields();
 
         // initialize class
         dao = new DatabaseAccessObject();
@@ -120,6 +118,25 @@ public class StudentAttendanceController implements Initializable {
         // end of methods
 
         // event buttons
+        connectBtn.setOnAction(event -> {
+            if(serialPort.isOpened()){
+                connectBtn.setText("Disconnect");
+                try {
+                    serialPort.closePort();
+                } catch (SerialPortException e) {
+                    e.printStackTrace();
+                }
+            }else{
+                connectBtn.setText("Connect");
+                try {
+                    initRfid();
+                    initFields();
+                } catch (SerialPortException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        });
         configBtn.setOnAction(event -> {
             try {
                 createPage(null,"/view/ConfigPage.fxml");
@@ -127,6 +144,9 @@ public class StudentAttendanceController implements Initializable {
                 e.printStackTrace();
             }
         });
+
+        
+
         // end of event buttons
     }
 
@@ -206,8 +226,6 @@ public class StudentAttendanceController implements Initializable {
                         String timediff= "";
                         String sampleData1 = dao.logout(stud_key,dept_key,timediff);
                     }
-
-
 
                 }else{
                     studrfidTxt.setText("No records found");

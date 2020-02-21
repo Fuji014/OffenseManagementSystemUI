@@ -1,0 +1,7 @@
+title: logic error 
+-------------------
+create connect and disconnect in main module
+fix design 
+fix initFields
+affected file: StudentAttendanceController
+-------------------

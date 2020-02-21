@@ -75,7 +75,7 @@ public class DatabaseAccessObject  {
         WeekFields weekFields = WeekFields.of(Locale.getDefault());
         // check current weeks 1-7 means monday to sunday
         int currentWeeksToInt = date.get(weekFields.weekOfWeekBasedYear());
-        String currentWeeksToString = ""; // init currentWeeksToInt var
+        String currentWeeksToString = ""; // init currentWeeksToString var
         switch(currentWeeksToInt){
             case 1:
                 currentWeeksToString = "monday";
@@ -281,7 +281,7 @@ public class DatabaseAccessObject  {
                             if(dateFormat1.parse(dateFormat1.format(date1)).after(dateFormat1.parse(valueOfWeeks)))
                             {
                                 System.out.println("curfew!");
-                                policyCurfew(student_key,dept_key,timediff);
+                                policyCurfew(student_key,dept_key,dateFormat1.format(date1));
                             }
                         }
                     }catch (Exception e){
@@ -649,7 +649,7 @@ public class DatabaseAccessObject  {
                 message = "Greetings! We are to inform you that "+student_name+", has committed a major offense. Please expect a call or contact us at 9915668. Thank you";
                 break;
             case "curfew":
-                message = "Greetings! "+student_name+" has Violated Curfew of 6:30PM on (02-05-20). Student is sanctioned with community service. Thank you!";
+                message = "Greetings! "+student_name+" has Violated Curfew of "+timediff+" on (02-05-20). Student is sanctioned with community service. Thank you!";
                 break;
         }
         if (serialPort.isOpened()) { // check if open
