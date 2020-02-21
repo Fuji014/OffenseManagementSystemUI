@@ -70,7 +70,7 @@ public class DatabaseAccessObject  {
         }
     }
 
-    public static String getCurrentWeek() { //get current week 1-7 means monday to sunday
+    public String getCurrentWeek() { //get current week 1-7 means monday to sunday
         LocalDate date = LocalDate.now();
         WeekFields weekFields = WeekFields.of(Locale.getDefault());
         // check current weeks 1-7 means monday to sunday
