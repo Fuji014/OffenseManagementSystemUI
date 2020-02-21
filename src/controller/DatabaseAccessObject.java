@@ -135,19 +135,19 @@ public class DatabaseAccessObject  {
                 String valueOfWeeks = "";
                 String valueOfWeeks1 = "";
                 int scheduleStatus  = 0;
-                query = "select "+getCurrentWeek()+" from tardiness_endtime_tbl where dept_key = "+dept_key+" limit 1";
-                try {
-                    connection = connector.getConnection();
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-                try {
-                    prs = connection.prepareStatement(query);
-                    rs = prs.executeQuery();
-                    while(rs.next()){
-                        valueOfWeeks1 = rs.getString(1);
-                    }
-                    if(!dateFormat2.parse(dateFormat2.format(date2)).after(dateFormat2.parse(valueOfWeeks1))){
+//                query = "select "+getCurrentWeek()+" from tardiness_endtime_tbl where dept_key = "+dept_key+" limit 1";
+//                try {
+//                    connection = connector.getConnection();
+//                }catch (Exception e){
+//                    e.printStackTrace();
+//                }
+//                try {
+//                    prs = connection.prepareStatement(query);
+//                    rs = prs.executeQuery();
+//                    while(rs.next()){
+//                        valueOfWeeks1 = rs.getString(1);
+//                    }
+//                    if(!dateFormat2.parse(dateFormat2.format(date2)).after(dateFormat2.parse(valueOfWeeks1))){
                         // mod
                         query = "select "+getCurrentWeek()+",status from schedule_tbl where policy = 'tardiness' and dept_key = "+dept_key+" limit 1";
                         try {
@@ -172,7 +172,29 @@ public class DatabaseAccessObject  {
                                     prs = connection.prepareStatement(query);
                                     prs.executeUpdate();
                                     if(scheduleStatus == 1){
-                                        policyTardiness(student_key,dept_key,dateFormat1.format(date1));
+                                        //modfile
+                                        query = "select " + getCurrentWeek() + " from tardiness_endtime_tbl where dept_key = " + dept_key + " limit 1";
+                                        try {
+                                            connection = connector.getConnection();
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+
+                                        try {
+                                            prs = connection.prepareStatement(query);
+                                            rs = prs.executeQuery();
+                                            while (rs.next()) {
+                                                valueOfWeeks1 = rs.getString(1);
+                                            }
+                                            if(!dateFormat2.parse(dateFormat2.format(date2)).after(dateFormat2.parse(valueOfWeeks1))) {
+                                                policyTardiness(student_key,dept_key,dateFormat1.format(date1));
+                                            }
+                                        }catch (Exception e){
+                                            e.printStackTrace();
+                                        }
+
+                                        // end of modfiles
+
                                     }
                                 }else{
                                     System.out.println("on time");
@@ -189,10 +211,10 @@ public class DatabaseAccessObject  {
                         }
                         // end of mod
                     }
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
+//                }catch (Exception e){
+//                    e.printStackTrace();
+//                }
+//            }
         }catch (Exception e){
             e.printStackTrace();
         }finally {
