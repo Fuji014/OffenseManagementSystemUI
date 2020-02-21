@@ -469,7 +469,7 @@ public class DatabaseAccessObject  {
                         query = "insert into student_offense_tbl (`std_offense_id`,`student_key`,`offense_key`,`student_offense_count`,`offense_severity`,`offense_duration`,`offense_completedTime`,`offense_status`,`student_offense_remarks`) values (null,"+student_key+","+offense_key+","+countStudOffense+",'major','"+penaltyDuration+"','00:00',0,'"+penaltyDescription+"')";
                         prs = connection.prepareStatement(query);
                         prs.executeUpdate();
-                    description = "Student witn ID no. "+student_key+" has committed Tardiness for "+countStudOffense+" time/s, and is sanctioned with a Major Offense. An notification SMS has been sent to the student's parent/guardian. you may call the parent/guardian witn the number 09051644625";
+                        description = "Student witn ID no. "+student_key+" has committed Tardiness for "+countStudOffense+" time/s, and is sanctioned with a Major Offense. An notification SMS has been sent to the students parent/guardian. you may call the parent/guardian witn the number 09051644625";
                         notifyInsert(student_key,"tardiness",departmentKey,countStudOffense,description);
                         sendSMS(student_key,"tardiness",timediff);
                 }else {
