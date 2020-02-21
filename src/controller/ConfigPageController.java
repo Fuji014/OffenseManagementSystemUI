@@ -61,10 +61,18 @@ public class ConfigPageController implements Initializable {
             }
         });
         gsmconnectBtn.setOnAction(event -> {
-            gsmEvent();
+            if(serialPortRfid.isOpened()){
+                _pushNotif.information("GSM Port Already Open", "You can now send message");
+            }else{
+                gsmEvent();
+            }
         });
         rfidconnectBtn.setOnAction(event -> {
-            rfidEvent();
+            if(serialPortRfid.isOpened()){
+                _pushNotif.information("RFID Port Already Open", "You can now scan tag");
+            }else{
+                rfidEvent();
+            }
         });
         gsmclearBtn.setOnAction(event -> {
 
