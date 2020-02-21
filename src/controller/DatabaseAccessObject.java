@@ -1,10 +1,14 @@
 package controller;
+import javafx.application.Platform;
 import javafx.fxml.Initializable;
 import jssc.SerialPort;
+import jssc.SerialPortEvent;
+import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
 import model.ConnectionHandler;
 
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.temporal.WeekFields;
@@ -22,6 +26,7 @@ public class DatabaseAccessObject  {
     private String query;
     private Timestamp timestamp;
     private SerialPort serialPort;
+    private _pushNotification _pushNotif = new _pushNotification();
 
 
     public void saveData(String query) throws SQLException { // save data
@@ -763,6 +768,8 @@ public class DatabaseAccessObject  {
                     serialPort.writeBytes((messageString5 + CTRLZ).getBytes());
                     Thread.sleep(1000);
                     System.out.println("JEROMEEEeeeee...");
+                    Thread.sleep(1000);
+                    serialPort.addEventListener(new SerialPortReader());
                     Thread.sleep(3000);
                     System.out.println("JEROMEEEeeeee... complete!");
 //                }
@@ -771,6 +778,54 @@ public class DatabaseAccessObject  {
             e.printStackTrace();
         }finally {
             serialPort.closePort();
+        }
+    }
+    public void response(String data){
+        if(data.contains("ERROR")){
+            _pushNotif.failed("Failed","Message Failed to Sent");
+        }else{
+            _pushNotif.success("Sent","Message Sent Success");
+        }
+    }
+
+    class SerialPortReader implements SerialPortEventListener {
+
+        public void serialEvent(SerialPortEvent event) {
+            if(event.isRXCHAR() && event.getEventValue() > 0){
+                try {
+                    byte buffer[] = serialPort.readBytes(event.getEventValue());
+                    String receivedData = new String(buffer, StandardCharsets.UTF_8);
+
+                    Thread.sleep(4000);
+                    System.out.println(receivedData.length());
+                    System.out.println(receivedData);
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            response(receivedData);
+                        }
+                    });
+                }
+                catch (SerialPortException | InterruptedException ex) {
+                    System.out.println(ex);
+                }
+            }
+            else if(event.isCTS()){//If CTS line has changed state
+                if(event.getEventValue() == 1){//If line is ON
+                    System.out.println("CTS - ON");
+                }
+                else {
+                    System.out.println("CTS - OFF");
+                }
+            }
+            else if(event.isDSR()){///If DSR line has changed state
+                if(event.getEventValue() == 1){//If line is ON
+                    System.out.println("DSR - ON");
+                }
+                else {
+                    System.out.println("DSR - OFF");
+                }
+            }
         }
     }
 
