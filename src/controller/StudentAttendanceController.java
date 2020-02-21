@@ -108,7 +108,7 @@ public class StudentAttendanceController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         initClock();
         initFields();
-
+        buttonStatus();
         // initialize class
         dao = new DatabaseAccessObject();
         // end of initialize class
@@ -119,15 +119,14 @@ public class StudentAttendanceController implements Initializable {
 
         // event buttons
         connectBtn.setOnAction(event -> {
+            buttonStatus();
             if(serialPort.isOpened()){
-                connectBtn.setText("Disconnect");
                 try {
                     serialPort.closePort();
                 } catch (SerialPortException e) {
                     e.printStackTrace();
                 }
             }else{
-                connectBtn.setText("Connect");
                 try {
                     initRfid();
                     initFields();
@@ -151,6 +150,13 @@ public class StudentAttendanceController implements Initializable {
     }
 
     // init
+    public void buttonStatus(){
+        if(serialPort.isOpened()){
+            connectBtn.setText("Disconnect");
+        }else{
+            connectBtn.setText("Connect");
+        }
+    }
     public void initFields() {
         portconnectedLbl.setText((serialPort.isOpened() == false) ? "No source found" : serialPort.getPortName());
         constatusLbl.setText((serialPort.isOpened() == false) ? "Connecting To Device..." : "Device Connection Established");

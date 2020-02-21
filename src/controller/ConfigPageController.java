@@ -45,6 +45,20 @@ public class ConfigPageController implements Initializable {
 
         closeBtn.setOnMouseClicked(event -> {
             this.closeBtn.getScene().getWindow().hide();
+            if(serialPortGSM.isOpened()){
+                try {
+                    serialPortGSM.closePort();
+                } catch (SerialPortException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(serialPortRfid.isOpened()){
+                try {
+                    serialPortRfid.closePort();
+                } catch (SerialPortException e) {
+                    e.printStackTrace();
+                }
+            }
         });
         gsmconnectBtn.setOnAction(event -> {
             gsmEvent();
