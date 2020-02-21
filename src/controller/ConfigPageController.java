@@ -34,8 +34,8 @@ public class ConfigPageController implements Initializable {
     @FXML
     private Label closeBtn;
 
-    private SerialPort serialPortRfid;
-    private SerialPort serialPortGSM;
+    private SerialPort serialPortRfid = new SerialPort("");
+    private SerialPort serialPortGSM = new SerialPort("");
     private _pushNotification _pushNotif;
 
     @Override
