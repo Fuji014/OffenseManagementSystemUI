@@ -469,7 +469,8 @@ public class DatabaseAccessObject  {
                         query = "insert into student_offense_tbl (`std_offense_id`,`student_key`,`offense_key`,`student_offense_count`,`offense_severity`,`offense_duration`,`offense_completedTime`,`offense_status`,`student_offense_remarks`) values (null,"+student_key+","+offense_key+","+countStudOffense+",'major','"+penaltyDuration+"','00:00',0,'"+penaltyDescription+"')";
                         prs = connection.prepareStatement(query);
                         prs.executeUpdate();
-                        notifyInsert(student_key,penaltyDescription,departmentKey);
+                    description = "Student witn ID no. "+student_key+" has committed Tardiness for "+countStudOffense+" time/s, and is sanctioned with a Major Offense. An notification SMS has been sent to the student's parent/guardian. you may call the parent/guardian witn the number 09051644625";
+                        notifyInsert(student_key,"tardiness",departmentKey,countStudOffense,description);
                         sendSMS(student_key,"tardiness",timediff);
                 }else {
                     prs.close();
@@ -483,8 +484,8 @@ public class DatabaseAccessObject  {
                     System.out.println(student_key);
                     System.out.println(penaltyDescription);
                     System.out.println(departmentKey);
-
-                    notifyInsert(student_key,penaltyDescription,departmentKey);
+                    description = "Student witn ID no. "+student_key+" has committed Tardiness for "+countStudOffense+" time/s, and is sanctioned with a Minor Offense. Please Review Offense.";
+                    notifyInsert(student_key,"tardiness",departmentKey,countStudOffense,description);
                     sendSMS(student_key,"tardiness",timediff);
 
                 }
@@ -523,6 +524,7 @@ public class DatabaseAccessObject  {
             }
             // count in current table
             int countStudOffense = 0;
+            String description = "";
             query = "SELECT count(*) FROM student_offense_tbl as so inner join offense_tbl as o on so.offense_key = o.id where student_key = "+student_key+" and offense_key = "+offense_key+" and o.offense_severity = '"+severity+"'";
             prs = connection.prepareStatement(query);
             rs = prs.executeQuery();
@@ -534,13 +536,15 @@ public class DatabaseAccessObject  {
                 query = "insert into student_offense_tbl (`std_offense_id`,`student_key`,`offense_key`,`student_offense_count`,`offense_severity`,`offense_duration`,`offense_completedTime`,`offense_status`,`student_offense_remarks`) values (null,"+student_key+","+offense_key+",1,'"+severity+"','"+penaltyDuration+"','00:00',0,'"+penaltyDescription+"')";
                 prs = connection.prepareStatement(query);
                 prs.executeUpdate();
-                notifyInsert(student_key,penaltyDescription,departmentKey);
+                description = "Student with ID no. "+student_key+" has been detected by the system committing Truancy for "+countStudOffense+" time/s, and is sanctioned with major offense. Please review offense.";
+                notifyInsert(student_key,"truancy",departmentKey,countStudOffense,description);
                 sendSMS(student_key,"truancy",timediff);
             }else {
                 query = "insert into student_offense_tbl (`std_offense_id`,`student_key`,`offense_key`,`student_offense_count`,`offense_severity`,`offense_duration`,`offense_completedTime`,`offense_status`,`student_offense_remarks`) values (null,"+student_key+","+offense_key+","+countStudOffense+",'"+severity+"','"+penaltyDuration+"','00:00',0,'"+penaltyDescription+"')";
                 prs = connection.prepareStatement(query);
                 prs.executeUpdate();
-                notifyInsert(student_key,penaltyDescription,departmentKey);
+                description = "Student with ID no. "+student_key+" has been detected by the system committing Truancy for "+countStudOffense+" time/s, and is sanctioned with major offense. Please review offense.";
+                notifyInsert(student_key,"truancy",departmentKey,countStudOffense,description);
                 sendSMS(student_key,"truancy",timediff);
             }
 
@@ -551,14 +555,7 @@ public class DatabaseAccessObject  {
         }
         // end of get offense key
     }
-    public void notifyInsert(String student_key,String description,int department_key){
-        query = "insert into notification_tbl (`studentNumber`,`description`,`status`,`department_key`) VALUES ("+student_key+",'"+description+"','unread',"+department_key+")";
-        try {
-            saveData1(query);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
+
     public void curfewEvent(String student_key,int department,int offense_key,String timediff) throws SQLException {
         // get offense key
         try {
@@ -588,6 +585,7 @@ public class DatabaseAccessObject  {
             }
             // count in current table
             int countStudOffense = 0;
+            String description = "";
             prs.close();
             query = "SELECT count(*) FROM student_offense_tbl as so inner join offense_tbl as o on so.offense_key = o.id where student_key = "+student_key+" and offense_key = "+offense_key+" and o.offense_severity = '"+severity+"'";
             prs = connection.prepareStatement(query);
@@ -598,6 +596,7 @@ public class DatabaseAccessObject  {
             if(countStudOffense >= offense_max){
                 prs.close();
                 query = "insert into student_offense_tbl (`std_offense_id`,`student_key`,`offense_key`,`student_offense_count`,`offense_severity`,`offense_duration`,`offense_completedTime`,`offense_status`,`student_offense_remarks`) values (null,"+student_key+","+offense_key+",1,'"+severity+"','"+penaltyDuration+"','00:00',0,'"+penaltyDescription+"')";
+
             }else {
                 prs.clearParameters();
                 query = "insert into student_offense_tbl (`std_offense_id`,`student_key`,`offense_key`,`student_offense_count`,`offense_severity`,`offense_duration`,`offense_completedTime`,`offense_status`,`student_offense_remarks`) values (null,"+student_key+","+offense_key+","+countStudOffense+",'"+severity+"','"+penaltyDuration+"','00:00',0,'"+penaltyDescription+"')";
@@ -605,7 +604,8 @@ public class DatabaseAccessObject  {
             prs.close();
             prs = connection.prepareStatement(query);
             prs.executeUpdate();
-            notifyInsert(student_key,penaltyDescription,departmentKey);
+            description = "Student with ID no. "+student_key+" has been detected by the system committing Curfew for "+countStudOffense+" time/s, and is sanctioned with major offense. Please review offense.";
+            notifyInsert(student_key,"curfew",departmentKey,countStudOffense,description);
             sendSMS(student_key,"curfew",timediff);
         }catch (Exception e){
             e.printStackTrace();
@@ -614,6 +614,31 @@ public class DatabaseAccessObject  {
         }
         // end of get offense key
     }
+
+    public void notifyInsert(String student_key,String offense_name,int department_key,int countStudOffense,String description){
+//        switch (department_key){
+//            case 1:
+//                if(description == "tardiness"){
+//                    if(countStudOffense == 2){
+//                        description = "Student with ID no. "+student_key+" has been detected by the system committing Tardiness for 2 time/s, and is sanctioned with major offense. Please review offense.";
+//                    }
+//                }
+//                break;
+//            case 2:
+//                break;
+//            case 3:
+//                break;
+//            case 4:
+//                break;
+//        }
+        query = "insert into notification_tbl (`studentNumber`,`description`,`status`,`department_key`) VALUES ("+student_key+",'"+description+"','unread',"+department_key+")";
+        try {
+            saveData1(query);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
 
     public  String timedifference(String time1,String time2) {
         String timediff = "";
