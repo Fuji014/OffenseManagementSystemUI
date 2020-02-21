@@ -615,7 +615,7 @@ public class DatabaseAccessObject  {
         // end of get offense key
     }
 
-    public void notifyInsert(String student_key,String offense_name,int department_key,int countStudOffense,String description){
+        public void notifyInsert(String student_key,String offense_name,int department_key,int countStudOffense,String description){
 //        switch (department_key){
 //            case 1:
 //                if(description == "tardiness"){
@@ -660,7 +660,10 @@ public class DatabaseAccessObject  {
         }
     }
 
-    public ResultSet getStudentInfoDetails(String query){
+    public ResultSet
+
+
+    getStudentInfoDetails(String query){
         try {
             connection = connector.getConnection();
         }catch (Exception e){
@@ -680,12 +683,13 @@ public class DatabaseAccessObject  {
     public void sendSMS(String student_key,String offense,String timediff) throws SQLException, SerialPortException {
         serialPort = new SerialPort(StudentAttendanceController.getStudentAttendanceController().gsmport);
         serialPort.openPort();
-        String student_name="",parent_fullname="",parent_contact="",message="";
-        query = "select student_id,student_name,parent_fullname,parent_contact from student_tbl where student_id = "+student_key+"";
+        String student_name="",parent_fullname="",student_contact="",parent_contact="",message="";
+        query = "select student_id,student_name,student_contact,parent_fullname,parent_contact from student_tbl where student_id = "+student_key+"";
         System.out.println(query);
         rs = getStudentInfoDetails(query);
         if(rs.next()){
             student_name = rs.getString("student_name");
+            student_contact = rs.getString("student_contact");
             parent_fullname = rs.getString("parent_fullname");
             parent_contact = rs.getString("parent_contact");
         }
@@ -716,44 +720,52 @@ public class DatabaseAccessObject  {
 //            String messageString2 = "AT+CPIN=\"7078\"";
             String messageString3 = "AT+CSCS=\"GSM\"";
 //            String messageString3 = "AT+CMGF=1";
-            String messageString4 = "AT+CMGS=\"+63"+parent_contact+"\"";
+//            String messageString4 = "AT+CMGS=\"+63"+parent_contact+"\"";
             String messageString5 = message;
+            String messageString4 = "";
             char enter = 13;
             char CTRLZ = 26;
-
-            if(message.length() > 150){
-                int count = 0;
-
-                while(_Spliter.getSplit(message).size() > count) {
+            int messageNumber = 2;
+            for(int i = 1; i <= messageNumber; i++){
+                if(i == 1){
+                    messageString4 = "AT+CMGS=\"+63"+parent_contact+"\"";
+                }else{
+                    messageString4 = "AT+CMGS=\"+63"+student_contact+"\"";
+                }
+//                if(message.length() > 150){
+//
+//                    int count = 0;
+//                    while(_Spliter.getSplit(message).size() > count) {
+//                        serialPort.writeBytes((messageString1 + enter).getBytes());
+//                        Thread.sleep(1000);
+//                        serialPort.writeBytes((messageString2 + enter).getBytes());
+//                        Thread.sleep(1000);
+//                        serialPort.writeBytes((messageString3 + enter).getBytes());
+//                        Thread.sleep(1000);
+//                        serialPort.writeBytes((messageString4 + enter).getBytes());
+//                        Thread.sleep(1000);
+//                        serialPort.writeBytes(( _Spliter.getSplit(message).get(count) + CTRLZ).getBytes());
+//                        Thread.sleep(1000);
+//                        System.out.println("JEROMEEEeeeee...");
+//                        Thread.sleep(3000);
+//                        System.out.println("JEROMEEEeeeee... complete");
+//                        count++;
+//                    }
+//                }else{
                     serialPort.writeBytes((messageString1 + enter).getBytes());
                     Thread.sleep(1000);
                     serialPort.writeBytes((messageString2 + enter).getBytes());
                     Thread.sleep(1000);
                     serialPort.writeBytes((messageString3 + enter).getBytes());
                     Thread.sleep(1000);
-                    serialPort.writeBytes((messageString4 + enter).getBytes());
+                serialPort.writeBytes((messageString4 + enter).getBytes());
                     Thread.sleep(1000);
-                    serialPort.writeBytes(( _Spliter.getSplit(message).get(count) + CTRLZ).getBytes());
+                    serialPort.writeBytes((messageString5 + CTRLZ).getBytes());
                     Thread.sleep(1000);
                     System.out.println("JEROMEEEeeeee...");
                     Thread.sleep(3000);
-                    System.out.println("JEROMEEEeeeee... complete");
-                    count++;
-                }
-            }else{
-                serialPort.writeBytes((messageString1 + enter).getBytes());
-                Thread.sleep(1000);
-                serialPort.writeBytes((messageString2 + enter).getBytes());
-                Thread.sleep(1000);
-                serialPort.writeBytes((messageString3 + enter).getBytes());
-                Thread.sleep(1000);
-                serialPort.writeBytes((messageString4 + enter).getBytes());
-                Thread.sleep(1000);
-                serialPort.writeBytes((messageString5 + CTRLZ).getBytes());
-                Thread.sleep(1000);
-                System.out.println("JEROMEEEeeeee...");
-                Thread.sleep(3000);
-                System.out.println("JEROMEEEeeeee... complete!");
+                    System.out.println("JEROMEEEeeeee... complete!");
+//                }
             }
         }catch (Exception e){
             e.printStackTrace();
