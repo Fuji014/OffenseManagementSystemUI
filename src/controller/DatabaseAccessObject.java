@@ -471,7 +471,8 @@ public class DatabaseAccessObject  {
 
                 if(countStudOffense >= offense_max){
                     prs.close();
-                        query = "insert into student_offense_tbl (`std_offense_id`,`student_key`,`offense_key`,`student_offense_count`,`offense_severity`,`offense_duration`,`offense_completedTime`,`offense_status`,`student_offense_remarks`) values (null,"+student_key+","+offense_key+","+countStudOffense+",'major','"+penaltyDuration+"','00:00',0,'"+penaltyDescription+"')";
+                        query = "insert into student_offense_tbl (`std_offense_id`,`student_key`,`offense_key`,`student_offense_count`,`offense_severity`,`offense_duration`,`offense_completedTime`,`offense_status`,`student_offense_remarks`) values (null,"+student_key+","+offense_key+","+countStudOffense+",'major','"+penaltyDuration+"','00:00','not complete','"+penaltyDescription+"')";
+                    System.out.println(penaltyDuration.getClass().getName());
                         prs = connection.prepareStatement(query);
                         prs.executeUpdate();
                         description = "Student witn ID no. "+student_key+" has committed Tardiness for "+countStudOffense+" time/s, and is sanctioned with a Major Offense. An notification SMS has been sent to the students parent/guardian. you may call the parent/guardian witn the number 09051644625";
@@ -480,10 +481,11 @@ public class DatabaseAccessObject  {
                 }else {
                     prs.close();
                     if(departmentKey == 1){
-                        query = "insert into student_offense_tbl (`std_offense_id`,`student_key`,`offense_key`,`student_offense_count`,`offense_severity`,`offense_duration`,`offense_completedTime`,`offense_status`,`student_offense_remarks`) values (null,"+student_key+","+offense_key+","+countStudOffense+",'minor','tardiness','00:00',0,'"+timediff+"')";
+                        query = "insert into student_offense_tbl (`std_offense_id`,`student_key`,`offense_key`,`student_offense_count`,`offense_severity`,`offense_duration`,`offense_completedTime`,`offense_status`,`student_offense_remarks`) values (null,"+student_key+","+offense_key+","+countStudOffense+",'minor','tardiness','00:00','not complete','"+timediff+"')";
                     }else {
-                        query = "insert into student_offense_tbl (`std_offense_id`,`student_key`,`offense_key`,`student_offense_count`,`offense_severity`,`offense_duration`,`offense_completedTime`,`offense_status`,`student_offense_remarks`) values (null,"+student_key+","+offense_key+","+countStudOffense+",'"+severity+"','"+penaltyDuration+"','00:00',0,'"+timediff+"')";
+                        query = "insert into student_offense_tbl (`std_offense_id`,`student_key`,`offense_key`,`student_offense_count`,`offense_severity`,`offense_duration`,`offense_completedTime`,`offense_status`,`student_offense_remarks`) values (null,"+student_key+","+offense_key+","+countStudOffense+",'"+severity+"','"+penaltyDuration+"','00:00','not complete','"+timediff+"')";
                     }
+                    System.out.println(penaltyDuration.getClass().getName());
                     prs = connection.prepareStatement(query);
                     prs.executeUpdate();
                     System.out.println(student_key);
@@ -538,14 +540,14 @@ public class DatabaseAccessObject  {
             }
             if(countStudOffense >= offense_max){
                 System.out.println("max");
-                query = "insert into student_offense_tbl (`std_offense_id`,`student_key`,`offense_key`,`student_offense_count`,`offense_severity`,`offense_duration`,`offense_completedTime`,`offense_status`,`student_offense_remarks`) values (null,"+student_key+","+offense_key+",1,'"+severity+"','"+penaltyDuration+"','00:00',0,'"+penaltyDescription+"')";
+                query = "insert into student_offense_tbl (`std_offense_id`,`student_key`,`offense_key`,`student_offense_count`,`offense_severity`,`offense_duration`,`offense_completedTime`,`offense_status`,`student_offense_remarks`) values (null,"+student_key+","+offense_key+",1,'"+severity+"','"+penaltyDuration+"','00:00','not complete','"+penaltyDescription+"')";
                 prs = connection.prepareStatement(query);
                 prs.executeUpdate();
                 description = "Student with ID no. "+student_key+" has been detected by the system committing Truancy for "+countStudOffense+" time/s, and is sanctioned with major offense. Please review offense.";
                 notifyInsert(student_key,"truancy",departmentKey,countStudOffense,description);
                 sendSMS(student_key,"truancy",timediff);
             }else {
-                query = "insert into student_offense_tbl (`std_offense_id`,`student_key`,`offense_key`,`student_offense_count`,`offense_severity`,`offense_duration`,`offense_completedTime`,`offense_status`,`student_offense_remarks`) values (null,"+student_key+","+offense_key+","+countStudOffense+",'"+severity+"','"+penaltyDuration+"','00:00',0,'"+penaltyDescription+"')";
+                query = "insert into student_offense_tbl (`std_offense_id`,`student_key`,`offense_key`,`student_offense_count`,`offense_severity`,`offense_duration`,`offense_completedTime`,`offense_status`,`student_offense_remarks`) values (null,"+student_key+","+offense_key+","+countStudOffense+",'"+severity+"','"+penaltyDuration+"','00:00','not complete','"+penaltyDescription+"')";
                 prs = connection.prepareStatement(query);
                 prs.executeUpdate();
                 description = "Student with ID no. "+student_key+" has been detected by the system committing Truancy for "+countStudOffense+" time/s, and is sanctioned with major offense. Please review offense.";
@@ -600,11 +602,11 @@ public class DatabaseAccessObject  {
             }
             if(countStudOffense >= offense_max){
                 prs.close();
-                query = "insert into student_offense_tbl (`std_offense_id`,`student_key`,`offense_key`,`student_offense_count`,`offense_severity`,`offense_duration`,`offense_completedTime`,`offense_status`,`student_offense_remarks`) values (null,"+student_key+","+offense_key+",1,'"+severity+"','"+penaltyDuration+"','00:00',0,'"+penaltyDescription+"')";
+                query = "insert into student_offense_tbl (`std_offense_id`,`student_key`,`offense_key`,`student_offense_count`,`offense_severity`,`offense_duration`,`offense_completedTime`,`offense_status`,`student_offense_remarks`) values (null,"+student_key+","+offense_key+",1,'"+severity+"','"+penaltyDuration+"','00:00','not complete','"+penaltyDescription+"')";
                 System.out.println();
             }else {
                 prs.clearParameters();
-                query = "insert into student_offense_tbl (`std_offense_id`,`student_key`,`offense_key`,`student_offense_count`,`offense_severity`,`offense_duration`,`offense_completedTime`,`offense_status`,`student_offense_remarks`) values (null,"+student_key+","+offense_key+","+countStudOffense+",'"+severity+"','"+penaltyDuration+"','00:00',0,'"+penaltyDescription+"')";
+                query = "insert into student_offense_tbl (`std_offense_id`,`student_key`,`offense_key`,`student_offense_count`,`offense_severity`,`offense_duration`,`offense_completedTime`,`offense_status`,`student_offense_remarks`) values (null,"+student_key+","+offense_key+","+countStudOffense+",'"+severity+"','"+penaltyDuration+"','00:00','not complete','"+penaltyDescription+"')";
             }
             prs.close();
             prs = connection.prepareStatement(query);
