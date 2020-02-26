@@ -85,7 +85,8 @@ public class StudentAttendanceController implements Initializable {
 
     // for rfid
     static ConnectionHandler connector = new ConnectionHandler();
-    static SerialPort serialPort = new SerialPort("");
+    static SerialPort serialPortRfid = new SerialPort("");
+    static SerialPort serialPortGSM = new SerialPort("");
     static Thread threadToInterrupt = null;
     static InputStream inputStream = null;
     private Image image;
@@ -120,15 +121,30 @@ public class StudentAttendanceController implements Initializable {
         // event buttons
         connectBtn.setOnAction(event -> {
             buttonStatus();
-            if(serialPort.isOpened()){
+            if(serialPortRfid.isOpened()){
                 try {
-                    serialPort.closePort();
+                    serialPortRfid.closePort();
                 } catch (SerialPortException e) {
                     e.printStackTrace();
                 }
             }else{
                 try {
                     initRfid();
+                    initFields();
+                } catch (SerialPortException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if(serialPortGSM.isOpened()){
+                try {
+                    serialPortGSM.closePort();
+                } catch (SerialPortException e) {
+                    e.printStackTrace();
+                }
+            }else{
+                try {
+                    initGSM();
                     initFields();
                 } catch (SerialPortException e) {
                     e.printStackTrace();
@@ -151,30 +167,43 @@ public class StudentAttendanceController implements Initializable {
 
     // init
     public void buttonStatus(){
-        if(serialPort.isOpened()){
-            connectBtn.setText("Disconnect");
-        }else{
+        if(serialPortRfid.isOpened()){
             connectBtn.setText("Connect");
+        }else{
+            connectBtn.setText("Disconnect");
         }
     }
     public void initFields() {
-        portconnectedLbl.setText((serialPort.isOpened() == false) ? "No source found" : serialPort.getPortName());
-        constatusLbl.setText((serialPort.isOpened() == false) ? "Connecting To Device..." : "Device Connection Established");
+        portconnectedLbl.setText((serialPortRfid.isOpened() == false) ? "No source found" : serialPortRfid.getPortName());
+        constatusLbl.setText((serialPortRfid.isOpened() == false) ? "Connecting To Device..." : "Device Connection Established");
         dbstatusLbl.setText((connector.isConnected() == true) ? "Database Connection OK" : "Check Database Connection");
 
     }
 
     public void initRfid() throws SerialPortException {
-        serialPort = new SerialPort(rfidport);
+        serialPortRfid = new SerialPort(rfidport);
         try {
-            serialPort.openPort();//Open port
-            serialPort.setParams(9600, 8, 1, 0);//Set params
+            serialPortRfid.openPort();//Open port
+            serialPortRfid.setParams(9600, 8, 1, 0);//Set params
             int mask = SerialPort.MASK_RXCHAR + SerialPort.MASK_CTS + SerialPort.MASK_DSR;//Prepare mask
-            serialPort.setEventsMask(mask);//Set mask
-            serialPort.addEventListener(
+            serialPortRfid.setEventsMask(mask);//Set mask
+            serialPortRfid.addEventListener(
                 new SerialPortReader()
             );//Add SerialPortEventListener
 //            Thread.sleep(2000);
+        }
+        catch (SerialPortException ex) {
+            System.out.println(ex);
+        }
+    }
+
+    public void initGSM() throws SerialPortException {
+        serialPortGSM = new SerialPort(gsmport);
+        try {
+            serialPortGSM.openPort();//Open port
+            serialPortGSM.setParams(9600, 8, 1, 0);//Set params
+            int mask = SerialPort.MASK_RXCHAR + SerialPort.MASK_CTS + SerialPort.MASK_DSR;//Prepare mask
+            serialPortGSM.setEventsMask(mask);//Set mask
         }
         catch (SerialPortException ex) {
             System.out.println(ex);
@@ -255,7 +284,7 @@ public class StudentAttendanceController implements Initializable {
                 if(event.getEventValue() == 10){//Check bytes count in the input buffer
                     //Read data, if 10 bytes available
                     try {
-                        byte buffer[] = serialPort.readBytes(event.getEventValue());
+                        byte buffer[] = serialPortRfid.readBytes(event.getEventValue());
                         String str = new String(buffer).split("\n", 2)[0].replaceAll("\\s+", "");
                         int byteSize = 0;
                         try {
