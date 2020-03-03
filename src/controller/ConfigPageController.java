@@ -34,8 +34,8 @@ public class ConfigPageController implements Initializable {
     @FXML
     private Label closeBtn;
 
-    private SerialPort serialPortRfid = new SerialPort("");
-    private SerialPort serialPortGSM = new SerialPort("");
+    private SerialPort serialPortRfid;
+    private SerialPort serialPortGSM;
     private _pushNotification _pushNotif;
 
     @Override
@@ -61,7 +61,7 @@ public class ConfigPageController implements Initializable {
             }
         });
         gsmconnectBtn.setOnAction(event -> {
-            if(serialPortRfid.isOpened()){
+            if(serialPortGSM.isOpened()){
                 _pushNotif.information("GSM Port Already Open", "You can now send message");
             }else{
                 gsmEvent();

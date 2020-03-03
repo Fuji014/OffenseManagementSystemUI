@@ -85,8 +85,8 @@ public class StudentAttendanceController implements Initializable {
 
     // for rfid
     static ConnectionHandler connector = new ConnectionHandler();
-    static SerialPort serialPortRfid = new SerialPort("");
-    static SerialPort serialPortGSM = new SerialPort("");
+    static SerialPort serialPortRfid;
+    static SerialPort serialPortGSM;
     static Thread threadToInterrupt = null;
     static InputStream inputStream = null;
     private Image image;
